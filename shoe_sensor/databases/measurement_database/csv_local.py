@@ -1,7 +1,7 @@
 """
 Implement a measurement database as a local CSV file.
 """
-
+import shoe_sensor.shared_constants
 from . import MeasurementDatabase
 import os
 import time
@@ -52,7 +52,7 @@ class MeasurementDatabaseCSVLocal(MeasurementDatabase):
         # Build the header
         header_list = []
         for field in fields:
-            field_info = locationsensor.shared_constants.DATA_FIELD_INFO.get(field)
+            field_info = shoe_sensor.shared_constants.DATA_FIELD_INFO.get(field)
             if field_info is None:
                 raise ValueError('Field name {} not recognized'.format(field))
             if field_info.get('list'):
@@ -87,7 +87,7 @@ class MeasurementDatabaseCSVLocal(MeasurementDatabase):
 
 def _format_datum(field, datum):
     string_list = []
-    field_info = locationsensor.shared_constants.DATA_FIELD_INFO.get(field)
+    field_info = shoe_sensor.shared_constants.DATA_FIELD_INFO.get(field)
     if field_info is None:
         raise ValueError('Field name {} not recognized'.format(field))
     if field_info.get('list'):

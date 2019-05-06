@@ -20,7 +20,7 @@ DATA_FIELD_INFO = collections.OrderedDict([
         'field_name_sentence_caps': "RSSI",
         'type': 'integer',
         'string_format': '{}',
-    }),
+    })])
 
 # TYPE_CONVERTERS = {
 #     'string': str,

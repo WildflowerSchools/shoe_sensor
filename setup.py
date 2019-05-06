@@ -14,7 +14,6 @@ setup(
         'bluepy==1.3.0',
         'tenacity==5.0.3',
         'bitstruct==6.0.0',
-        'pandas==0.24.1',
     ],
     keywords=['bluetooth'],
     classifiers=[

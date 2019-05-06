@@ -62,7 +62,7 @@ def collect_data(
     else:
         logger.info('Collecting data for {} cycles'.format(cycles))
     cycles_completed = 0
-    scanner = bluepy.btle.Scanner().withDelegate(ShoeSensorDelegate(maeasurement_database, mac_addresses))
+    scanner = bluepy.btle.Scanner().withDelegate(ShoeSensorDelegate(measurement_database, mac_addresses))
     try:
         while cycles == 0 or cycles_completed < cycles:
             logger.info('Data collection cycle {}'.format(cycles_completed + 1))
@@ -71,9 +71,9 @@ def collect_data(
     except KeyboardInterrupt:
         logger.warning('Keyboard interrupt detected. Shutting down data collection.')
 
-class ShoeSensorDelegate(DefaultDelegate):
+class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
     def __init__(self, measurement_database, mac_addresses):
-        DefaultDelegate.__init__(self)
+        bluepy.btle.DefaultDelegate.__init__(self)
         self.mac_addresses = mac_addresses
         self.measurement_database = measurement_database
 
