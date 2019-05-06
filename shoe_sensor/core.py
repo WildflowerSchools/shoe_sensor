@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # BLE advertising data codes
 MANUFACTURER_SPECIFIC_TYPE_CODE = int('0xFF', 16)
-MANUFACTURER_SPECIFIC_VALUE = 'TBD' # Should be  0x8a 0x07 in some format
+SHOE_SENSOR_MANUFACTURER_SPECIFIC_VALUE = '8a07' # Should be  0x8a 0x07 in some format
 
 def find_shoe_sensors(num_scans = 1, timeout = 10):
     scanner = bluepy.btle.Scanner()
@@ -33,7 +33,7 @@ def find_shoe_sensors(num_scans = 1, timeout = 10):
             scan_data = scan_entry.getScanData()
             for type_code, description, value in scan_data:
                 if (type_code == MANUFACTURER_SPECIFIC_TYPE_CODE and
-                    True): # This is where we'll add the condition on the value
+                    value == SHOE_SENSOR_MANUFACTURER_SPECIFIC_VALUE):
                     logger.debug('{}: {} ({})'.format(scan_entry.addr, value, type(value)))
                     mac_address = scan_entry.addr
                     if mac_address not in mac_addresses:
