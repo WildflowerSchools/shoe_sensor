@@ -2,13 +2,9 @@
 Define a database to contain data collected from Wildflower shoe sensors
 """
 
-########################################################################
-## UNUSED CODE                                                        ##
-########################################################################
-
 class MeasurementDatabase:
     """
-    Class to represent a database containing data from DWM1001 devices.
+    Class to represent a database containing data from devices.
 
     All methods must be implemented by derived classes.
     """
@@ -16,10 +12,9 @@ class MeasurementDatabase:
         self,
         device_data):
         """
-        Write DWM1001 data to the database.
+        Write measurement data to the database.
 
-        Device data must include 'timestamp' and either 'device_id' or
-        'short_device_id' (or both).
+        Device data must include 'timestamp'.
 
         Parameters:
             device_data (dict): Dictionary containing device data

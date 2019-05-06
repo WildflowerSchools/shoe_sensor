@@ -2,10 +2,6 @@
 Implement a measurement database as a local CSV file.
 """
 
-########################################################################
-## UNUSED CODE                                                        ##
-########################################################################
-
 from . import MeasurementDatabase
 import os
 import time
@@ -23,11 +19,10 @@ class MeasurementDatabaseCSVLocal(MeasurementDatabase):
         """
         Constructor for MeasurementDatabaseCSVLocal.
 
-        Included fields must include 'timestamp' and either 'device_id' or
-        'short_device_id' (or both). Any data that is sent to this database that
-        does not match the specified included fields will be silently dropped.
-        Constructor will raise an exception if required fields are missing or
-        any of the field names are not recognized.
+        Included fields must include 'timestamp'. Any data that is sent to this
+        database that does not match the specified included fields will be
+        silently dropped. Constructor will raise an exception if required fields
+        are missing or any of the field names are not recognized.
 
         Parameters:
             directory (string): Path to directory for CSV file
@@ -36,8 +31,6 @@ class MeasurementDatabaseCSVLocal(MeasurementDatabase):
         """
         if 'timestamp' not in fields:
             raise ValueError('Included fields must include timestamp')
-        if 'device_id' not in fields and 'short_device_id' not in fields:
-            raise ValueError('Included fields must include either device ID or short device ID')
         self._fields = fields
         file_timestamp = time.strftime('%y%m%d_%H%M%S', time.gmtime())
         path = os.path.join(
@@ -75,10 +68,9 @@ class MeasurementDatabaseCSVLocal(MeasurementDatabase):
         self,
         device_data):
         """
-        Write DWM1001 data to the database.
+        Write measurement data to the database.
 
-        Device data must include 'timestamp' and either 'device_id' or
-        'short_device_id' (or both).
+        Device data must include 'timestamp'.
 
         Parameters:
             device_data (dict): Dictionary containing device data
@@ -86,8 +78,6 @@ class MeasurementDatabaseCSVLocal(MeasurementDatabase):
         # Buld the row
         if 'timestamp' not in device_data.keys():
             raise ValueError('Data must include timestamp')
-        if 'device_id' not in device_data.keys() and 'short_device_id' not in device_data.keys():
-            raise ValueError('Data must include either device ID or short device ID')
         row_list = []
         for field in self._fields:
             row_list.append(_format_datum(field, device_data.get(field)))
