@@ -34,7 +34,6 @@ def find_shoe_sensors(num_scans = 1, timeout = 10):
             for type_code, description, value in scan_data:
                 if (type_code == MANUFACTURER_SPECIFIC_TYPE_CODE and
                     value == SHOE_SENSOR_MANUFACTURER_SPECIFIC_VALUE):
-                    logger.debug('{}: {} ({})'.format(scan_entry.addr, value, type(value)))
                     mac_address = scan_entry.addr
                     if mac_address not in mac_addresses:
                         mac_addresses.append(mac_address)

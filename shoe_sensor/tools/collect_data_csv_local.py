@@ -82,7 +82,9 @@ def main():
     logging.info('Scanning for shoe sensors')
     mac_addresses = shoe_sensor.core.find_shoe_sensors()
     num_shoe_sensors = len(mac_addresses)
-    logging.info('Found {} Decawave devices'.format(num_shoe_sensors))
+    logging.info('Found {} shoe sensors'.format(num_shoe_sensors))
+    for mac_address in mac_addresses:
+        logging.info('{}'.format(mac_address))
     # Get data from Decawave devices and write to database
     logging.info('Getting data from shoe sensors and writing to measurement database')
     shoe_sensor.core.collect_data(
