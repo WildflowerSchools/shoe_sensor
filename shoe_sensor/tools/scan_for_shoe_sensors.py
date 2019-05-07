@@ -21,6 +21,13 @@ def main():
         help = 'filename for output file (default is mac_addresses.txt)'
     )
     parser.add_argument(
+        '-t',
+        '--timeout',
+        type = int,
+        default = 10,
+        help = 'number of seconds for scan (default is 10)'
+    )
+    parser.add_argument(
         '-l',
         '--loglevel',
         help = 'log level (e.g., debug or warning or info)'
@@ -29,6 +36,7 @@ def main():
     args = parser.parse_args()
     directory = args.dir
     filename_base = args.output_file
+    timeout = args.timeout
     loglevel = args.loglevel
     # Set log level
     if loglevel is not None:
@@ -38,7 +46,10 @@ def main():
         logging.basicConfig(level=numeric_loglevel)
     # Build list of MAC addresses
     logging.info('Scanning for shoe sensors')
-    mac_addresses = shoe_sensor.core.find_shoe_sensors()
+    mac_addresses = shoe_sensor.core.find_shoe_sensors(
+        num_scans = 1,
+        timeout = timeout
+    )
     num_shoe_sensors = len(mac_addresses)
     logging.info('Found {} shoe sensors'.format(num_shoe_sensors))
     for mac_address in mac_addresses:
