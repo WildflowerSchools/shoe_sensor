@@ -27,11 +27,18 @@ def main():
         help = 'path to text file with list of MAC addresses to scan for (colon-separated hex strings, one per line)'
     )
     parser.add_argument(
+        '-t',
+        '--timeout',
+        type = int,
+        default = 10,
+        help = 'number of seconds for each data collection cycle (default is 10)'
+    )
+    parser.add_argument(
         '-c',
         '--cycles',
         type = int,
         default = 1,
-        help = 'number of times to collect data from each device (default is 1)'
+        help = 'number of number of data collection cycles (default is 1)'
     )
     # parser.add_argument(
     #     '-f',
@@ -48,6 +55,7 @@ def main():
     directory = args.dir
     filename_base = args.output_file
     mac_addresses_path = args.mac_addresses
+    timeout = args.timeout
     cycles = args.cycles
     # field_list_path = args.field_list
     loglevel = args.loglevel
@@ -104,7 +112,8 @@ def main():
     shoe_sensor.core.collect_data(
         measurement_database = measurement_database,
         mac_addresses = mac_addresses,
-        cycles = cycles)
+        cycles = cycles,
+        timeout = timeout)
 
 if __name__ == '__main__':
     main()
