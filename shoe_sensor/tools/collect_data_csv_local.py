@@ -7,7 +7,7 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(
         description='Read data from devices and save to local CSV file.',
-        epilog = 'If number of cycles is set to zero, data will be collected until a keyboard interrupt (e.g., CTRL-C) is detected.'
+        epilog = 'If MAC addresses are not specified, script will scan for shoe sensors. If number of cycles is set to zero, data will be collected until a keyboard interrupt (e.g., CTRL-C) is detected.'
     )
     parser.add_argument(
         '-d',
@@ -20,6 +20,11 @@ def main():
         '--output_file',
         default = 'measurement_data',
         help = 'base of filename for output file; timestamp and .csv extension added automatically (default is measurement_data)'
+    )
+    parser.add_argument(
+        '-m',
+        '--mac_addresses',
+        help = 'path to text file with list of MAC addresses to scan for (colon-separated hex strings, one per line)'
     )
     parser.add_argument(
         '-c',
@@ -42,6 +47,7 @@ def main():
     args = parser.parse_args()
     directory = args.dir
     filename_base = args.output_file
+    mac_addresses_path = args.mac_addresses
     cycles = args.cycles
     # field_list_path = args.field_list
     loglevel = args.loglevel
@@ -78,9 +84,17 @@ def main():
         filename_base = filename_base,
         fields = fields
     )
-    # Scan for Decawave devices
-    logging.info('Scanning for shoe sensors')
-    mac_addresses = shoe_sensor.core.find_shoe_sensors()
+    # Build list of MAC addresses
+    if mac_addresses_path is not None:
+        logging.info('Retrieving MAC addresses from {}'.format(mac_addresses_path))
+        mac_addresses = []
+        with open(mac_addresses_path, 'r') as file:
+            for line in file:
+                mac_address = line.strip()
+                mac_addresses.append(mac_address)
+    else:
+        logging.info('Scanning for shoe sensors')
+        mac_addresses = shoe_sensor.core.find_shoe_sensors()
     num_shoe_sensors = len(mac_addresses)
     logging.info('Found {} shoe sensors'.format(num_shoe_sensors))
     for mac_address in mac_addresses:
