@@ -3,6 +3,7 @@ import shoe_sensor.shared_constants
 from shoe_sensor.databases.measurement_database.csv_local import MeasurementDatabaseCSVLocal
 import logging
 import argparse
+import os
 
 def main():
     parser = argparse.ArgumentParser(
@@ -35,7 +36,7 @@ def main():
     # Read arguments
     args = parser.parse_args()
     directory = args.dir
-    filename_base = args.output_file
+    output_file = args.output_file
     timeout = args.timeout
     loglevel = args.loglevel
     # Set log level
