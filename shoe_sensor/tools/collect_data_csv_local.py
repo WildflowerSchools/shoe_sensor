@@ -1,8 +1,10 @@
 import shoe_sensor.core
 import shoe_sensor.shared_constants
-from shoe_sensor.databases.measurement_database.csv_local import MeasurementDatabaseCSVLocal
+from database_connection.csv import DatabaseConnectionCSV
 import logging
 import argparse
+import time
+import os
 
 def main():
     parser = argparse.ArgumentParser(
@@ -53,6 +55,13 @@ def main():
     timeout = args.timeout
     cycles = args.cycles
     loglevel = args.loglevel
+    # Build path to output file
+    file_timestamp = time.strftime('%y%m%d_%H%M%S', time.gmtime())
+    path = os.path.join(
+        directory,
+        '{}_{}.csv'.format(
+            filename_base,
+            file_timestamp))
     # Set log level
     if loglevel is not None:
         numeric_loglevel = getattr(logging, loglevel.upper(), None)
@@ -64,14 +73,13 @@ def main():
         logging.info('Data will be collected until keyboard interrupt is detected')
     else:
         logging.info('Data will be collected for {} cycles'.format(cycles))
-    # Build field list
-    fields = ['timestamp', 'mac_address', 'rssi']
-    # Initialize measurement database
-    logging.info('Initializing measurement database as local CSV file')
-    measurement_database = MeasurementDatabaseCSVLocal(
-        directory = directory,
-        filename_base = filename_base,
-        fields = fields
+    # Initialize database connection
+    data_field_names = ['rssi']
+    convert_from_string_functions = {'rssi': lambda string: int(string)}
+    database_connection = DatabaseConnectionCSV(
+        path,
+        data_field_names = data_field_names,
+        convert_from_string_functions = convert_from_string_functions
     )
     # Build list of MAC addresses
     if mac_addresses_path is not None:
@@ -91,7 +99,7 @@ def main():
     # Get data from Decawave devices and write to database
     logging.info('Getting data from shoe sensors and writing to measurement database')
     shoe_sensor.core.collect_data(
-        measurement_database = measurement_database,
+        database_connection = database_connection,
         mac_addresses = mac_addresses,
         cycles = cycles,
         timeout = timeout)
