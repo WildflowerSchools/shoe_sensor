@@ -1,5 +1,4 @@
 import shoe_sensor.core
-import shoe_sensor.shared_constants
 from database_connection.csv import DatabaseConnectionCSV
 import logging
 import argparse
