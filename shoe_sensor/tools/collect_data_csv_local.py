@@ -40,11 +40,6 @@ def main():
         default = 1,
         help = 'number of number of data collection cycles (default is 1)'
     )
-    # parser.add_argument(
-    #     '-f',
-    #     '--field_list',
-    #     help = 'path to text file containing list of data fields to collect (one field per line)'
-    # )
     parser.add_argument(
         '-l',
         '--loglevel',
@@ -57,7 +52,6 @@ def main():
     mac_addresses_path = args.mac_addresses
     timeout = args.timeout
     cycles = args.cycles
-    # field_list_path = args.field_list
     loglevel = args.loglevel
     # Set log level
     if loglevel is not None:
@@ -72,19 +66,6 @@ def main():
         logging.info('Data will be collected for {} cycles'.format(cycles))
     # Build field list
     fields = ['timestamp', 'mac_address', 'rssi']
-    # fields = []
-    # if field_list_path is not None:
-    #     with open(field_list_path, 'r') as file:
-    #         for line in file:
-    #             fields.append(line.strip())
-    #     if 'timestamp' not in fields:
-    #         raise ValueError('Field list must include timestamp')
-    #     if 'device_id' not in fields and 'short_device_id' not in fields:
-    #         raise ValueError('Field list must include either device ID or short device ID')
-    #     logging.info('Data will be collected for the following fields: {}'.format(', '.join(fields)))
-    # else:
-    #     fields = locationsensor.shared_constants.REQUIRED_AND_BLE_READ_FIELDS
-    #     logging.info('Data will be collected for all available BLE fields (plus timestamp and short_device_id)')
     # Initialize measurement database
     logging.info('Initializing measurement database as local CSV file')
     measurement_database = MeasurementDatabaseCSVLocal(
