@@ -13,7 +13,6 @@ def main():
     parser.add_argument(
         '-e',
         '--env_name',
-        default = 'TEST Ted home office',
         help = 'Honeycomb environment name (default is "TEST Ted home office")'
     )
     parser.add_argument(
@@ -23,8 +22,8 @@ def main():
         help = 'Honeycomb object type (default is DEVICE)'
     )
     parser.add_argument(
-        '-i',
-        '--id_field_name',
+        '-f',
+        '--object_id_field_name',
         default = 'part_number',
         help = 'name of Honeycomb field in which to store object ID (default is part_number)'
     )
@@ -48,6 +47,16 @@ def main():
         help = 'number of number of data collection cycles (default is 1)'
     )
     parser.add_argument(
+        '-a',
+        '--anchor_id',
+        help = 'anchor ID'
+    )
+    parser.add_argument(
+        '-a',
+        '--anchor_id',
+        help = 'anchor ID'
+    )
+    parser.add_argument(
         '-l',
         '--loglevel',
         help = 'log level (e.g., debug or warning or info)'
@@ -56,11 +65,17 @@ def main():
     args = parser.parse_args()
     environment_name_honeycomb = args.env_name
     object_type_honeycomb = args.object_type
-    object_id_field_name_honeycomb = args.id_field_name
+    object_id_field_name_honeycomb = args.object_id_field_name
     mac_addresses_path = args.mac_addresses
     timeout = args.timeout
     cycles = args.cycles
+    anchor_id = args.anchor_id
     loglevel = args.loglevel
+    # Check for environment and anchor ID
+    if environment_name_honeycomb is None:
+        raise ValueError('Honeycomb environment must be specified')
+    if anchor_id is None:
+        raise ValueError('Anchor ID must be specified')
     # Set log level
     if loglevel is not None:
         numeric_loglevel = getattr(logging, loglevel.upper(), None)
@@ -98,6 +113,7 @@ def main():
     shoe_sensor.core.collect_data(
         database_connection = database_connection,
         mac_addresses = mac_addresses,
+        anchor_id = anchor_id,
         cycles = cycles,
         timeout = timeout)
 
