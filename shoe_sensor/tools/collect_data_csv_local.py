@@ -39,7 +39,12 @@ def main():
         '--cycles',
         type = int,
         default = 1,
-        help = 'number of number of data collection cycles (default is 1)'
+        help = 'number of data collection cycles (default is 1)'
+    )
+    parser.add_argument(
+        '-a',
+        '--anchor_id',
+        help = 'anchor ID'
     )
     parser.add_argument(
         '-l',
@@ -53,7 +58,11 @@ def main():
     mac_addresses_path = args.mac_addresses
     timeout = args.timeout
     cycles = args.cycles
+    anchor_id = args.anchor_id
     loglevel = args.loglevel
+    # Check that anchor ID is specified
+    if anchor_id is None:
+        raise ValueError('Anchor ID must be specified')
     # Build path to output file
     file_timestamp = time.strftime('%y%m%d_%H%M%S', time.gmtime())
     path = os.path.join(
@@ -73,7 +82,7 @@ def main():
     else:
         logging.info('Data will be collected for {} cycles'.format(cycles))
     # Initialize database connection
-    data_field_names = ['rssi']
+    data_field_names = ['anchor_id', 'rssi']
     convert_from_string_functions = {'rssi': lambda string: int(string)}
     database_connection = DatabaseConnectionCSV(
         path,
@@ -100,6 +109,7 @@ def main():
     shoe_sensor.core.collect_data(
         database_connection = database_connection,
         mac_addresses = mac_addresses,
+        anchor_id = anchor_id,
         cycles = cycles,
         timeout = timeout)
 

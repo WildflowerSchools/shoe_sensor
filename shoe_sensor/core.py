@@ -42,6 +42,7 @@ def find_shoe_sensors(num_scans = 1, timeout = 10):
 def collect_data(
     database_connection,
     mac_addresses,
+    anchor_id,
     cycles = 1,
     timeout = 10):
     """
@@ -61,7 +62,7 @@ def collect_data(
     else:
         logger.info('Collecting data for {} cycles'.format(cycles))
     cycles_completed = 0
-    scanner = bluepy.btle.Scanner().withDelegate(ShoeSensorDelegate(database_connection, mac_addresses))
+    scanner = bluepy.btle.Scanner().withDelegate(ShoeSensorDelegate(database_connection, mac_addresses, anchor_id))
     try:
         while cycles == 0 or cycles_completed < cycles:
             logger.info('Data collection cycle {}'.format(cycles_completed + 1))
@@ -71,10 +72,11 @@ def collect_data(
         logger.warning('Keyboard interrupt detected. Shutting down data collection.')
 
 class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
-    def __init__(self, database_connection, mac_addresses):
+    def __init__(self, database_connection, mac_addresses, anchor_id):
         bluepy.btle.DefaultDelegate.__init__(self)
         self.mac_addresses = mac_addresses
         self.database_connection = database_connection
+        self.anchor_id = anchor_id
 
     def handleDiscovery(self, dev, isNewDev, isNewData):
         mac_address = dev.addr
@@ -82,7 +84,7 @@ class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
             timestamp = datetime.datetime.now(datetime.timezone.utc)
             rssi = dev.rssi
             logger.debug('{}: {} dB'.format(mac_address, rssi))
-            device_data = {'rssi': rssi}
+            device_data = {'anchor_id': self.anchor_id, 'rssi': rssi}
             self.database_connection.write_data_object_time_series(
                 timestamp = timestamp,
                 object_id = mac_address,
