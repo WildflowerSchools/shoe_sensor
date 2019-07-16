@@ -19,7 +19,7 @@ def main():
     parser.add_argument(
         '-o',
         '--output_file',
-        default = 'measurement_data',
+        default = 'shoe_sensor_data',
         help = 'base of filename for output file; timestamp and .csv extension added automatically (default is measurement_data)'
     )
     parser.add_argument(
