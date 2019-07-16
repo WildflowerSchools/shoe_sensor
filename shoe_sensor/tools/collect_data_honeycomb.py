@@ -52,11 +52,6 @@ def main():
         help = 'anchor ID'
     )
     parser.add_argument(
-        '-a',
-        '--anchor_id',
-        help = 'anchor ID'
-    )
-    parser.add_argument(
         '-l',
         '--loglevel',
         help = 'log level (e.g., debug or warning or info)'
