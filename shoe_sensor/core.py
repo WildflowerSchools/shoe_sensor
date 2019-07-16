@@ -40,8 +40,9 @@ def find_shoe_sensors(num_scans = 1, timeout = 10):
     return mac_addresses
 
 def collect_data(
-    measurement_database,
+    database_connection,
     mac_addresses,
+    anchor_id,
     cycles = 1,
     timeout = 10):
     """
@@ -52,7 +53,7 @@ def collect_data(
     keyboard interrupt.
 
     Parameters:
-        measurement_database (MeasurementDatabase): Database where data should be stored
+        database_connection (DatabaseConnection): Database where data should be stored
         mac_addresses (list): MAC addresses for devices we want to collect from
         cycles (int): Number of times to collect data from each device (default is 1)
     """
@@ -61,7 +62,7 @@ def collect_data(
     else:
         logger.info('Collecting data for {} cycles'.format(cycles))
     cycles_completed = 0
-    scanner = bluepy.btle.Scanner().withDelegate(ShoeSensorDelegate(measurement_database, mac_addresses))
+    scanner = bluepy.btle.Scanner().withDelegate(ShoeSensorDelegate(database_connection, mac_addresses, anchor_id))
     try:
         while cycles == 0 or cycles_completed < cycles:
             logger.info('Data collection cycle {}'.format(cycles_completed + 1))
@@ -71,10 +72,11 @@ def collect_data(
         logger.warning('Keyboard interrupt detected. Shutting down data collection.')
 
 class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
-    def __init__(self, measurement_database, mac_addresses):
+    def __init__(self, database_connection, mac_addresses, anchor_id):
         bluepy.btle.DefaultDelegate.__init__(self)
         self.mac_addresses = mac_addresses
-        self.measurement_database = measurement_database
+        self.database_connection = database_connection
+        self.anchor_id = anchor_id
 
     def handleDiscovery(self, dev, isNewDev, isNewData):
         mac_address = dev.addr
@@ -82,9 +84,9 @@ class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
             timestamp = datetime.datetime.now(datetime.timezone.utc)
             rssi = dev.rssi
             logger.debug('{}: {} dB'.format(mac_address, rssi))
-            device_data = {
-                'timestamp': timestamp,
-                'mac_address': mac_address,
-                'rssi': rssi
-            }
-            self.measurement_database.put_device_data(device_data)
+            device_data = {'anchor_id': self.anchor_id, 'rssi': rssi}
+            self.database_connection.write_data_object_time_series(
+                timestamp = timestamp,
+                object_id = mac_address,
+                data = device_data
+            )

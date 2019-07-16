@@ -1,5 +1,5 @@
 import shoe_sensor.core
-from database_connection.csv import DatabaseConnectionCSV
+from database_connection_honeycomb import DatabaseConnectionHoneycomb
 import logging
 import argparse
 import time
@@ -7,20 +7,25 @@ import os
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Read data from devices and save to local CSV file.',
+        description='Read data from devices and save to Honeycomb.',
         epilog = 'If MAC addresses are not specified, script will scan for shoe sensors. If number of cycles is set to zero, data will be collected until a keyboard interrupt (e.g., CTRL-C) is detected.'
     )
     parser.add_argument(
-        '-d',
-        '--dir',
-        default = '.',
-        help = 'path to directory for output file (default is .)'
+        '-e',
+        '--env_name',
+        help = 'Honeycomb environment name (default is "TEST Ted home office")'
     )
     parser.add_argument(
         '-o',
-        '--output_file',
-        default = 'shoe_sensor_data',
-        help = 'base of filename for output file; timestamp and .csv extension added automatically (default is measurement_data)'
+        '--object_type',
+        default = 'DEVICE',
+        help = 'Honeycomb object type (default is DEVICE)'
+    )
+    parser.add_argument(
+        '-f',
+        '--object_id_field_name',
+        default = 'part_number',
+        help = 'name of Honeycomb field in which to store object ID (default is part_number)'
     )
     parser.add_argument(
         '-m',
@@ -39,7 +44,7 @@ def main():
         '--cycles',
         type = int,
         default = 1,
-        help = 'number of data collection cycles (default is 1)'
+        help = 'number of number of data collection cycles (default is 1)'
     )
     parser.add_argument(
         '-a',
@@ -53,23 +58,19 @@ def main():
     )
     # Read arguments
     args = parser.parse_args()
-    directory = args.dir
-    filename_base = args.output_file
+    environment_name_honeycomb = args.env_name
+    object_type_honeycomb = args.object_type
+    object_id_field_name_honeycomb = args.object_id_field_name
     mac_addresses_path = args.mac_addresses
     timeout = args.timeout
     cycles = args.cycles
     anchor_id = args.anchor_id
     loglevel = args.loglevel
-    # Check that anchor ID is specified
+    # Check for environment and anchor ID
+    if environment_name_honeycomb is None:
+        raise ValueError('Honeycomb environment must be specified')
     if anchor_id is None:
         raise ValueError('Anchor ID must be specified')
-    # Build path to output file
-    file_timestamp = time.strftime('%y%m%d_%H%M%S', time.gmtime())
-    path = os.path.join(
-        directory,
-        '{}_{}.csv'.format(
-            filename_base,
-            file_timestamp))
     # Set log level
     if loglevel is not None:
         numeric_loglevel = getattr(logging, loglevel.upper(), None)
@@ -82,12 +83,10 @@ def main():
     else:
         logging.info('Data will be collected for {} cycles'.format(cycles))
     # Initialize database connection
-    data_field_names = ['anchor_id', 'rssi']
-    convert_from_string_functions = {'rssi': lambda string: int(string)}
-    database_connection = DatabaseConnectionCSV(
-        path,
-        data_field_names = data_field_names,
-        convert_from_string_functions = convert_from_string_functions
+    database_connection = DatabaseConnectionHoneycomb(
+        environment_name_honeycomb = environment_name_honeycomb,
+        object_type_honeycomb = object_type_honeycomb,
+        object_id_field_name_honeycomb = object_id_field_name_honeycomb
     )
     # Build list of MAC addresses
     if mac_addresses_path is not None:
