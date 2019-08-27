@@ -85,7 +85,7 @@ class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
             rssi = dev.rssi
             logger.debug('{}: {} dB'.format(mac_address, rssi))
             device_data = {'anchor_id': self.anchor_id, 'rssi': rssi}
-            self.database_connection.write_data_object_time_series(
+            self.database_connection.write_datapoint_object_time_series(
                 timestamp = timestamp,
                 object_id = mac_address,
                 data = device_data
