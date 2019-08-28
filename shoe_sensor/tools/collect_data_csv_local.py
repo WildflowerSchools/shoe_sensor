@@ -62,7 +62,9 @@ def main():
     loglevel = args.loglevel
     # Check that anchor ID is specified
     if anchor_id is None:
-        raise ValueError('Anchor ID must be specified')
+        anchor_id = os.getenv('ANCHOR_ID')
+        if anchor_id is None:
+            raise ValueError('Anchor ID must be specified on command line or in ANCHOR_ID environment variable')
     # Build path to output file
     file_timestamp = time.strftime('%y%m%d_%H%M%S', time.gmtime())
     path = os.path.join(
