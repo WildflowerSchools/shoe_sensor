@@ -1,65 +1,28 @@
-import shoe_sensor.core
-from database_connection.csv import DatabaseConnectionCSV
 import logging
-import argparse
 import time
 import os
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='Read data from devices and save to local CSV file.',
-        epilog = 'If MAC addresses are not specified, script will scan for shoe sensors. If number of cycles is set to zero, data will be collected until a keyboard interrupt (e.g., CTRL-C) is detected.'
-    )
-    parser.add_argument(
-        '-d',
-        '--dir',
-        default = '.',
-        help = 'path to directory for output file (default is .)'
-    )
-    parser.add_argument(
-        '-o',
-        '--output_file',
-        default = 'shoe_sensor_data',
-        help = 'base of filename for output file; timestamp and .csv extension added automatically (default is measurement_data)'
-    )
-    parser.add_argument(
-        '-m',
-        '--mac_addresses',
-        help = 'path to text file with list of MAC addresses to scan for (colon-separated hex strings, one per line)'
-    )
-    parser.add_argument(
-        '-t',
-        '--timeout',
-        type = int,
-        default = 10,
-        help = 'number of seconds for each data collection cycle (default is 10)'
-    )
-    parser.add_argument(
-        '-c',
-        '--cycles',
-        type = int,
-        default = 1,
-        help = 'number of data collection cycles (default is 1)'
-    )
-    parser.add_argument(
-        '-a',
-        '--anchor_id',
-        help = 'anchor ID'
-    )
-    parser.add_argument(
-        '-l',
-        '--loglevel',
-        help = 'log level (e.g., debug or warning or info)'
-    )
-    # Read arguments
-    args = parser.parse_args()
-    directory = args.dir
-    filename_base = args.output_file
-    mac_addresses_path = args.mac_addresses
-    timeout = args.timeout
-    cycles = args.cycles
-    anchor_id = args.anchor_id
-    loglevel = args.loglevel
+import click
+from database_connection.csv import DatabaseConnectionCSV
+
+import shoe_sensor.core
+
+
+@click.command()
+@click.option('--directory', '-d', help='path to directory for output file (default is .)', default='.')
+@click.option('--output_file', '-o', help='base of filename for output file; timestamp and .csv extension added automatically (default is measurement_data)', default='measurement_data')
+@click.option('--timeout', '-t', type=int, help='number of seconds for each data collection cycle (default is 10)', default=10)
+@click.option('--loglevel', '-l', help='log level (e.g., debug or warning or info)', default='WARNING')
+@click.option('--mac_addresses', '-m', help='', default='mac_addresses.txt')
+@click.option('--cycles', '-c', type=int, help='number of data collection cycles (default is 1)', default=1)
+@click.option('--anchor_id', '-a', help='anchor ID')
+def main(directory, output_file, mac_addresses, anchor_id, cycles, timeout, loglevel):
+    """Read data from devices and save to local CSV file.
+
+        If MAC addresses are not specified, script will scan for shoe sensors. If number of cycles is set to zero, data will be collected until a keyboard interrupt (e.g., CTRL-C) is detected.
+    """
+    filename_base = output_file
+    mac_addresses_path = mac_addresses
     # Check that anchor ID is specified
     if anchor_id is None:
         anchor_id = os.getenv('ANCHOR_ID')
@@ -88,8 +51,8 @@ def main():
     convert_from_string_functions = {'rssi': lambda string: int(string)}
     database_connection = DatabaseConnectionCSV(
         path,
-        data_field_names = data_field_names,
-        convert_from_string_functions = convert_from_string_functions
+        data_field_names=data_field_names,
+        convert_from_string_functions=convert_from_string_functions
     )
     # Build list of MAC addresses
     if mac_addresses_path is not None:
@@ -109,11 +72,12 @@ def main():
     # Get data from Decawave devices and write to database
     logging.info('Getting data from shoe sensors and writing to measurement database')
     shoe_sensor.core.collect_data(
-        database_connection = database_connection,
-        mac_addresses = mac_addresses,
-        anchor_id = anchor_id,
-        cycles = cycles,
-        timeout = timeout)
+        database_connection=database_connection,
+        mac_addresses=mac_addresses,
+        anchor_id=anchor_id,
+        cycles=cycles,
+        timeout=timeout)
+
 
 if __name__ == '__main__':
     main()

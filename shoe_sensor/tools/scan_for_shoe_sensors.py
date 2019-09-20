@@ -1,42 +1,19 @@
-import shoe_sensor.core
 import logging
-import argparse
 import os
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='Scan for devices and save MAC addresses to local text file.'
-    )
-    parser.add_argument(
-        '-d',
-        '--dir',
-        default = '.',
-        help = 'path to directory for output file (default is .)'
-    )
-    parser.add_argument(
-        '-o',
-        '--output_file',
-        default = 'mac_addresses.txt',
-        help = 'filename for output file (default is mac_addresses.txt)'
-    )
-    parser.add_argument(
-        '-t',
-        '--timeout',
-        type = int,
-        default = 10,
-        help = 'number of seconds for scan (default is 10)'
-    )
-    parser.add_argument(
-        '-l',
-        '--loglevel',
-        help = 'log level (e.g., debug or warning or info)'
-    )
+import click
+
+import shoe_sensor.core
+
+
+@click.command()
+@click.option('--directory', '-d', help='path to directory for output file (default is .)', default='.')
+@click.option('--output_file', '-o', help='filename for output file (default is mac_addresses.txt)', default='mac_addresses.txt')
+@click.option('--timeout', '-t', type=int, help='number of seconds for scan (default is 10)', default=10)
+@click.option('--loglevel', '-l', help='log level (e.g., debug or warning or info)', default='WARNING')
+def main(directory, output_file, timeout, loglevel):
+    """Scan for devices and save MAC addresses to local text file."""
     # Read arguments
-    args = parser.parse_args()
-    directory = args.dir
-    output_file = args.output_file
-    timeout = args.timeout
-    loglevel = args.loglevel
     # Set log level
     if loglevel is not None:
         numeric_loglevel = getattr(logging, loglevel.upper(), None)

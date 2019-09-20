@@ -1,4 +1,26 @@
+import os
 from setuptools import setup, find_packages
+
+
+BASEDIR = os.path.dirname(os.path.abspath(__file__))
+VERSION = open(os.path.join(BASEDIR, 'VERSION')).read().strip()
+REQUIREMENTS = []
+DEPENDENCY_LINKS = []
+
+
+with open(os.path.join(BASEDIR, 'requirements.txt')) as fp:
+    lines = fp.readlines()
+    for line in lines:
+        line = line.strip()
+        if ("http://" in line or "https://" in line or "ssh://" in line) and "#egg=" in line:
+            parts = line.split("#egg=")
+            REQUIREMENTS.append(parts[-1])
+            DEPENDENCY_LINKS.append(line)
+        elif len(line) and line[0] != "#" and line[0] != "-":
+            REQUIREMENTS.append(line)
+
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(BASEDIR))
 
 setup(
     name='shoe_sensor',
@@ -10,11 +32,8 @@ setup(
     url='https://github.com/WildflowerSchools/shoe_sensor',
     author='Ted Quinn',
     author_email='ted.quinn@wildflowerschools.org',
-    install_requires=[
-        'bluepy==1.3.0',
-        'tenacity==5.0.3',
-        'bitstruct==6.0.0',
-    ],
+    install_requires=REQUIREMENTS,
+    dependency_links=DEPENDENCY_LINKS,
     keywords=['bluetooth'],
     classifiers=[
         'Intended Audience :: Developers',
