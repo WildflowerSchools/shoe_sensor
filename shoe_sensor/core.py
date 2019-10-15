@@ -65,8 +65,11 @@ def collect_data(
     scanner = bluepy.btle.Scanner().withDelegate(ShoeSensorDelegate(database_connection, mac_addresses, anchor_id))
     try:
         while cycles == 0 or cycles_completed < cycles:
-            logger.info('Data collection cycle {}'.format(cycles_completed + 1))
-            scanner.scan(timeout)
+            try:
+                logger.info('Data collection cycle {}'.format(cycles_completed + 1))
+                scanner.scan(timeout)
+            except bluepy.btle.BTLEDisconnectError:
+                logger.error('disconnect error, reconnecting')
             cycles_completed += 1
     except KeyboardInterrupt:
         logger.warning('Keyboard interrupt detected. Shutting down data collection.')

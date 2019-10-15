@@ -9,6 +9,7 @@ WORKDIR /app
 COPY ./shoe_sensor/ /app/shoe_sensor/
 COPY ./setup.py /app/setup.py
 COPY ./README.md /app/README.md
+COPY ./requirements.txt /app/requirements.txt
 
 RUN pip install .
 

@@ -7,7 +7,6 @@ from database_connection.csv import DatabaseConnectionCSV
 
 import shoe_sensor.core
 
-
 @click.command()
 @click.option('--directory', '-d', help='path to directory for output file (default is .)', default='.')
 @click.option('--output_file', '-o', help='base of filename for output file; timestamp and .csv extension added automatically (default is measurement_data)', default='measurement_data')
@@ -51,8 +50,8 @@ def main(directory, output_file, mac_addresses, anchor_id, cycles, timeout, logl
     convert_from_string_functions = {'rssi': lambda string: int(string)}
     database_connection = DatabaseConnectionCSV(
         path,
-        data_field_names=data_field_names,
-        convert_from_string_functions=convert_from_string_functions
+        data_field_names = data_field_names,
+        convert_from_string_functions = convert_from_string_functions
     )
     # Build list of MAC addresses
     if mac_addresses_path is not None:
@@ -72,12 +71,12 @@ def main(directory, output_file, mac_addresses, anchor_id, cycles, timeout, logl
     # Get data from Decawave devices and write to database
     logging.info('Getting data from shoe sensors and writing to measurement database')
     shoe_sensor.core.collect_data(
-        database_connection=database_connection,
-        mac_addresses=mac_addresses,
-        anchor_id=anchor_id,
-        cycles=cycles,
-        timeout=timeout)
-
+        database_connection = database_connection,
+        mac_addresses = mac_addresses,
+        anchor_id = anchor_id,
+        cycles = cycles,
+        timeout = timeout)
 
 if __name__ == '__main__':
     main()
+

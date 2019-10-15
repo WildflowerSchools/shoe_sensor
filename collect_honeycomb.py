@@ -1,40 +1,31 @@
+import shoe_sensor.core
+from database_connection_honeycomb import DatabaseConnectionHoneycomb
 import logging
 import time
 import os
 
 import click
-from database_connection.csv import DatabaseConnectionCSV
-
-import shoe_sensor.core
 
 
 @click.command()
-@click.option('--directory', '-d', help='path to directory for output file (default is .)', default='.')
-@click.option('--output_file', '-o', help='base of filename for output file; timestamp and .csv extension added automatically (default is measurement_data)', default='measurement_data')
+@click.option('--env_name', '-e', help='Honeycomb environment name (default is "TEST Ted home office")')
+@click.option('--object_type', '-o', help='Honeycomb object type (default is DEVICE)', default="DEVICE")
+@click.option('--object_id_field_name', '-f', help='name of Honeycomb field in which to store object ID (default is part_number)', default="part_number")
 @click.option('--timeout', '-t', type=int, help='number of seconds for each data collection cycle (default is 10)', default=10)
 @click.option('--loglevel', '-l', help='log level (e.g., debug or warning or info)', default='WARNING')
-@click.option('--mac_addresses', '-m', help='', default='mac_addresses.txt')
+@click.option('--mac_addresses_path', '-m', help='', default='mac_addresses.txt')
 @click.option('--cycles', '-c', type=int, help='number of data collection cycles (default is 1)', default=1)
 @click.option('--anchor_id', '-a', help='anchor ID')
-def main(directory, output_file, mac_addresses, anchor_id, cycles, timeout, loglevel):
-    """Read data from devices and save to local CSV file.
+def main(env_name, object_type, object_id_field_name, mac_addresses_path, anchor_id, cycles, timeout, loglevel):
+    """Read data from devices and save to Honeycomb.
 
-        If MAC addresses are not specified, script will scan for shoe sensors. If number of cycles is set to zero, data will be collected until a keyboard interrupt (e.g., CTRL-C) is detected.
+    If MAC addresses are not specified, script will scan for shoe sensors. If number of cycles is set to zero, data will be collected until a keyboard interrupt (e.g., CTRL-C) is detected.
     """
-    filename_base = output_file
-    mac_addresses_path = mac_addresses
-    # Check that anchor ID is specified
+    # Check for environment and anchor ID
+    if env_name is None:
+        raise ValueError('Honeycomb environment must be specified')
     if anchor_id is None:
-        anchor_id = os.getenv('ANCHOR_ID')
-        if anchor_id is None:
-            raise ValueError('Anchor ID must be specified on command line or in ANCHOR_ID environment variable')
-    # Build path to output file
-    file_timestamp = time.strftime('%y%m%d_%H%M%S', time.gmtime())
-    path = os.path.join(
-        directory,
-        '{}_{}.csv'.format(
-            filename_base,
-            file_timestamp))
+        raise ValueError('Anchor ID must be specified')
     # Set log level
     if loglevel is not None:
         numeric_loglevel = getattr(logging, loglevel.upper(), None)
@@ -47,12 +38,10 @@ def main(directory, output_file, mac_addresses, anchor_id, cycles, timeout, logl
     else:
         logging.info('Data will be collected for {} cycles'.format(cycles))
     # Initialize database connection
-    data_field_names = ['anchor_id', 'rssi']
-    convert_from_string_functions = {'rssi': lambda string: int(string)}
-    database_connection = DatabaseConnectionCSV(
-        path,
-        data_field_names=data_field_names,
-        convert_from_string_functions=convert_from_string_functions
+    database_connection = DatabaseConnectionHoneycomb(
+        environment_name_honeycomb = env_name,
+        object_type_honeycomb = object_type,
+        object_id_field_name_honeycomb = object_id_field_name
     )
     # Build list of MAC addresses
     if mac_addresses_path is not None:
@@ -72,12 +61,11 @@ def main(directory, output_file, mac_addresses, anchor_id, cycles, timeout, logl
     # Get data from Decawave devices and write to database
     logging.info('Getting data from shoe sensors and writing to measurement database')
     shoe_sensor.core.collect_data(
-        database_connection=database_connection,
-        mac_addresses=mac_addresses,
-        anchor_id=anchor_id,
-        cycles=cycles,
-        timeout=timeout)
-
+        database_connection = database_connection,
+        mac_addresses = mac_addresses,
+        anchor_id = anchor_id,
+        cycles = cycles,
+        timeout = timeout)
 
 if __name__ == '__main__':
     main()
