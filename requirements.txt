@@ -1,7 +1,6 @@
 bluepy==1.3.0
-git+https://github.com/WildflowerSchools/database_connection.git
-git+https://github.com/WildflowerSchools/database_connection_honeycomb.git
-git+https://github.com/WildflowerSchools/graphql-python-client-generator.git
-git+https://github.com/WildflowerSchools/wildflower-honeycomb-sdk-py.git
-git+https://github.com/WildflowerSchools/shoe_sensor.git
+git+https://github.com/WildflowerSchools/database_connection.git#egg=database_connection
+git+https://github.com/WildflowerSchools/database_connection_honeycomb.git#egg=database_connection_honeycomb
+git+https://github.com/WildflowerSchools/graphql-python-client-generator.git#egg=pygqlcg
+git+https://github.com/WildflowerSchools/wildflower-honeycomb-sdk-py.git#egg=honeycomb
 click==7.0
