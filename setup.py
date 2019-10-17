@@ -25,7 +25,7 @@ os.chdir(os.path.normpath(BASEDIR))
 setup(
     name='shoe_sensor',
     packages=find_packages(),
-    version='0.0.1',
+    version=VERSION,
     include_package_data=True,
     description='Python package for communicating with Wildflower shoe sensors through BLE interface',
     long_description=open('README.md').read(),
