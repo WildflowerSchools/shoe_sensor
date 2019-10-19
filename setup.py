@@ -21,7 +21,7 @@ setup(
     description='Python package for communicating with Wildflower shoe sensors through BLE interface',
     long_description=open('README.md').read(),
     url='https://github.com/WildflowerSchools/shoe_sensor',
-    author='Ted Quinn',
+    author='Theodore Quinn',
     author_email='ted.quinn@wildflowerschools.org',
     install_requires=BASE_DEPENDENCIES,
     keywords=['bluetooth'],
