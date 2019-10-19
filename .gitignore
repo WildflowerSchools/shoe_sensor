@@ -1,3 +1,5 @@
 .remote-sync*
 __pycache__/
 shoe_sensor\.egg-info/
+dist/
+build/
