@@ -14,7 +14,7 @@ BASE_DEPENDENCIES = [
 os.chdir(os.path.normpath(BASEDIR))
 
 setup(
-    name='shoe_sensor',
+    name='wf-shoe-sensor',
     packages=find_packages(),
     version=VERSION,
     include_package_data=True,
