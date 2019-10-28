@@ -3,3 +3,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+tmp-amd64/
+
+tmp-armhf/

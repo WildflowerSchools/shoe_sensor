@@ -12,3 +12,4 @@ RUN pip install wf-shoe-sensor
 COPY scripts/run-honeycomb.sh .
 
 CMD ["sh", "run-honeycomb.sh"]
+
