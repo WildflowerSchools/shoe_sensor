@@ -76,6 +76,7 @@ def collect_data(
 
 class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
     def __init__(self, database_connection, mac_addresses, anchor_id):
+        logger.debug('Initializing Bluetooth scanner delegate')
         bluepy.btle.DefaultDelegate.__init__(self)
         self.mac_addresses = mac_addresses
         self.database_connection = database_connection
@@ -83,7 +84,9 @@ class ShoeSensorDelegate(bluepy.btle.DefaultDelegate):
 
     def handleDiscovery(self, dev, isNewDev, isNewData):
         mac_address = dev.addr
+        logger.debug('Bluetooth device discovered: {}'.format(mac_address))
         if mac_address in self.mac_addresses:
+            logger.debug('Device {} is in target list'.format(mac_address))
             timestamp = datetime.datetime.now(datetime.timezone.utc)
             rssi = dev.rssi
             logger.debug('{}: {} dB'.format(mac_address, rssi))
