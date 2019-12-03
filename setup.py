@@ -5,7 +5,7 @@ BASEDIR = os.path.dirname(os.path.abspath(__file__))
 VERSION = open(os.path.join(BASEDIR, 'VERSION')).read().strip()
 
 BASE_DEPENDENCIES = [
-    'wf-database-connection-honeycomb>=0.1.3',
+    'wf-database-connection-honeycomb>=0.2.0',
     'bluepy>=1.3.0',
     'click>=7.0'
 ]
